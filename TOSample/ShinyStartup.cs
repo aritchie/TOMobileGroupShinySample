@@ -13,7 +13,10 @@ namespace TOSample
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.UseNotifications();
+            services.UseNotifications(true, androidOpts =>
+            {
+                androidOpts.SmallIconResourceName = "notification";
+            });
             services.UseGps<ShinyDelegates>();
             services.UseGeofencing<ShinyDelegates>();
 
@@ -23,12 +26,12 @@ namespace TOSample
             services.RegisterJob(new JobInfo
             {
                 // since you can register the same job type against multiple sets
-                // of parameters, we must give our job an string identifier 
-                Identifier = nameof(ShinyDelegates), 
+                // of parameters, we must give our job an string identifier
+                Identifier = nameof(ShinyDelegates),
                 Type = typeof(ShinyDelegates),
 
                 // must have some sort of network
-                RequiredInternetAccess = InternetAccess.Any, 
+                //RequiredInternetAccess = InternetAccess.Any,
 
                 // pass any args into your job
                 Parameters = new Dictionary<string, object>
@@ -37,13 +40,6 @@ namespace TOSample
                     { "Message", "I'm a test notification" },
                     { "Counter", 0 }
                 }
-            });
-
-            services.RegisterPostBuildAction(sp =>
-            {
-                // as soon as the app is ready, we will request permission to
-                // send notifications from the user
-                sp.GetService<INotificationManager>().RequestAccess();
             });
         }
     }
